@@ -1,4 +1,17 @@
-function SelectFullscreenModal({ theme, photo, currentIndex, total, isStarred, onBack, onNext, onToggleStar, onClose }) {
+function SelectFullscreenModal({
+  theme,
+  photographerLabel,
+  photo,
+  currentIndex,
+  total,
+  isStarred,
+  canGoToNextTheme,
+  onBack,
+  onNext,
+  onNextTheme,
+  onToggleStar,
+  onClose
+}) {
   if (!photo) {
     return null;
   }
@@ -7,8 +20,17 @@ function SelectFullscreenModal({ theme, photo, currentIndex, total, isStarred, o
     <div className="select-fullscreen-overlay">
       <div className="select-fullscreen-modal" role="dialog" aria-modal="true">
         <h3>{theme}</h3>
+        {photographerLabel ? <p className="select-fullscreen-photographer">{photographerLabel}</p> : null}
         <div className="select-fullscreen-stage">
           <div className="select-fullscreen-topbar">
+            <button
+              type="button"
+              className="button-inverted select-control-button"
+              onClick={onNextTheme}
+              disabled={!canGoToNextTheme}
+            >
+              Next Theme
+            </button>
             <button type="button" className="button-inverted select-control-button" onClick={onClose}>
               Close
             </button>

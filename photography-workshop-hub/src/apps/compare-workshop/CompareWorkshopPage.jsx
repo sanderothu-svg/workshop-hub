@@ -97,13 +97,9 @@ function CompareWorkshopPage() {
 
     return photoCatalog.every((photographer) => {
       const availablePhotos = availablePhotosByPhotographer[photographer.photographerId] ?? [];
-      if (!availablePhotos.length) {
-        return false;
-      }
-
-      return Boolean(activeSelectedPhotoByPhotographer[photographer.photographerId]);
+      return availablePhotos.length > 0;
     });
-  }, [activeSelectedPhotoByPhotographer, availablePhotosByPhotographer, photoCatalog]);
+  }, [availablePhotosByPhotographer, photoCatalog]);
 
   const photoById = useMemo(() => {
     const entries = {};
@@ -466,29 +462,31 @@ function CompareWorkshopPage() {
     return availablePhotos[Math.min(currentIndex, availablePhotos.length - 1)];
   }
 
-  function confirmCurrentPhoto(photographerId) {
-    const currentPhoto = getCurrentPhoto(photographerId);
-    if (!currentPhoto) {
+  function confirmSetupRound() {
+    if (!canConfirmSetup) {
+      alert('No available photos for one or more photographers.');
       return;
     }
 
-    updateActiveSelections((current) => ({ ...current, [photographerId]: currentPhoto.id }));
-  }
-
-  function confirmSetupRound() {
-    if (!canConfirmSetup) {
-      alert('Please confirm one photo for each photographer before going to next page.');
-      return;
+    const selectedPhotoByPhotographer = {};
+    for (const photographer of photoCatalog) {
+      const currentPhoto = getCurrentPhoto(photographer.photographerId);
+      if (!currentPhoto) {
+        alert('No available photos for one or more photographers.');
+        return;
+      }
+      selectedPhotoByPhotographer[photographer.photographerId] = currentPhoto.id;
     }
 
     if (isViewingConfirmedPage) {
+      updateActiveSelections(selectedPhotoByPhotographer);
       alert('Page updated.');
       return;
     }
 
     const nextRound = {
       theme: activeTheme.trim() || `Theme ${confirmedRounds.length + 1}`,
-      selectedPhotoByPhotographer: { ...activeSelectedPhotoByPhotographer }
+      selectedPhotoByPhotographer
     };
 
     const nextRounds = [...confirmedRounds, nextRound];
@@ -927,22 +925,25 @@ function CompareWorkshopPage() {
 
     function handleFullscreenKeys(event) {
       if (event.key === 'Escape') {
+        event.preventDefault();
         setFullscreenPhotographerId(null);
         return;
       }
 
       if (event.key === 'ArrowLeft') {
+        event.preventDefault();
         movePhoto(fullscreenPhotographerId, -1);
         return;
       }
 
       if (event.key === 'ArrowRight') {
+        event.preventDefault();
         movePhoto(fullscreenPhotographerId, 1);
         return;
       }
 
-      if (event.key === 'Enter') {
-        confirmCurrentPhoto(fullscreenPhotographerId);
+      if (event.key === 'Enter' || event.key === 'Return' || event.code === 'NumpadEnter') {
+        event.preventDefault();
         setFullscreenPhotographerId(null);
       }
     }
@@ -1052,6 +1053,11 @@ function CompareWorkshopPage() {
 
       if (event.key === 'ArrowRight') {
         moveListingPhoto(1);
+        return;
+      }
+
+      if (event.key === 'Enter') {
+        setIsListingFullscreenOpen(false);
       }
     }
 
@@ -1119,10 +1125,8 @@ function CompareWorkshopPage() {
             photoCatalog={photoCatalog}
             availablePhotosByPhotographer={availablePhotosByPhotographer}
             currentPhotoIndexByPhotographer={currentPhotoIndexByPhotographer}
-            activeSelectedPhotoByPhotographer={activeSelectedPhotoByPhotographer}
             onOpenFullscreen={setFullscreenPhotographerId}
             onMovePhoto={movePhoto}
-            onConfirmCurrentPhoto={confirmCurrentPhoto}
             canConfirmSetup={canConfirmSetup}
             onConfirmSetupRound={confirmSetupRound}
             isViewingConfirmedPage={isViewingConfirmedPage}
@@ -1180,10 +1184,6 @@ function CompareWorkshopPage() {
             photo={setupFullscreenPhoto}
             onBack={() => movePhoto(fullscreenPhotographerId, -1)}
             onNext={() => movePhoto(fullscreenPhotographerId, 1)}
-            onConfirm={() => {
-              confirmCurrentPhoto(fullscreenPhotographerId);
-              setFullscreenPhotographerId(null);
-            }}
             onClose={() => setFullscreenPhotographerId(null)}
           />
         ) : null}
@@ -1191,12 +1191,17 @@ function CompareWorkshopPage() {
         {isSelectFullscreenOpen ? (
           <SelectFullscreenModal
             theme={currentSelectCategory?.theme}
+            photographerLabel={
+              currentSelectPhoto ? (isAnonymousMode ? null : currentSelectPhoto.photographerName) : null
+            }
             photo={currentSelectPhoto}
             currentIndex={currentSelectIndex}
             total={currentSelectCategory?.photos.length ?? 0}
             isStarred={currentSelectIsStarred}
+            canGoToNextTheme={selectCategoryIndex < randomizedSelectPhotosByCategory.length - 1}
             onBack={() => moveSelectPhoto(-1)}
             onNext={() => moveSelectPhoto(1)}
+            onNextTheme={goToNextSelectCategory}
             onToggleStar={toggleBestPhoto}
             onClose={() => setIsSelectFullscreenOpen(false)}
           />

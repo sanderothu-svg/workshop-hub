@@ -3,15 +3,16 @@ import { Link } from 'react-router-dom';
 const apps = [
   {
     name: 'Compare Workshop',
-    description: 'Compare and review workshop photos in one workflow.',
+    description: 'Compare, review, and star photos.',
     useCase:
-      'Use this app to upload workshop photos, compare picks, and generate one final listing for delivery/export.',
+      'Use this app to run workshops with multiple photographers, compare images, and generate a final shortlist of the best photos. You can also review selections by photographer during the workshop.',
     path: '/apps/compare-workshop'
   },
   {
     name: 'Selection Workshop',
-    description: 'Build and manage workshop selection flows.',
-    useCase: 'Use this app to create selection logic and shortlist handling for workshop sessions.',
+    description: 'Photo selection in multiple steps.',
+    useCase:
+      'Use this app to improve the selection process and avoid over-delivering photos. Start by uploading a batch, then configure two selection rounds and set the target number of final images.',
     path: '/apps/selection-workshop'
   },
   {

@@ -1,4 +1,4 @@
-function SetupFullscreenModal({ photographerName, photo, onBack, onNext, onConfirm, onClose }) {
+function SetupFullscreenModal({ photographerName, photo, onBack, onNext, onClose }) {
   if (!photo || !photographerName) {
     return null;
   }
@@ -15,11 +15,8 @@ function SetupFullscreenModal({ photographerName, photo, onBack, onNext, onConfi
           <button type="button" onClick={onNext}>
             Next
           </button>
-          <button type="button" onClick={onConfirm}>
-            Confirm
-          </button>
           <button type="button" className="secondary-item" onClick={onClose}>
-            Cancel
+            Close
           </button>
         </div>
       </div>

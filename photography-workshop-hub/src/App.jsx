@@ -21,6 +21,7 @@ function App() {
     if (passwordInput === ADMIN_PASSWORD) {
       setIsAuthenticated(true);
       setError('');
+      navigate('/', { replace: true });
       return;
     }
 

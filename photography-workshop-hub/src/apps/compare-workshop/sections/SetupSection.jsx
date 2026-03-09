@@ -13,10 +13,8 @@ function SetupSection({
   photoCatalog,
   availablePhotosByPhotographer,
   currentPhotoIndexByPhotographer,
-  activeSelectedPhotoByPhotographer,
   onOpenFullscreen,
   onMovePhoto,
-  onConfirmCurrentPhoto,
   canConfirmSetup,
   onConfirmSetupRound,
   isViewingConfirmedPage
@@ -55,8 +53,6 @@ function SetupSection({
           const availablePhotos = availablePhotosByPhotographer[photographer.photographerId] ?? [];
           const currentIndex = currentPhotoIndexByPhotographer[photographer.photographerId] ?? 0;
           const currentPhoto = availablePhotos[Math.min(currentIndex, Math.max(availablePhotos.length - 1, 0))] ?? null;
-          const isConfirmed =
-            activeSelectedPhotoByPhotographer[photographer.photographerId] === (currentPhoto ? currentPhoto.id : null);
 
           return (
             <article key={photographer.photographerId} className="setup-card">
@@ -83,10 +79,6 @@ function SetupSection({
                       Next
                     </button>
                   </div>
-
-                  <button type="button" onClick={() => onConfirmCurrentPhoto(photographer.photographerId)}>
-                    {isConfirmed ? 'Confirmed' : 'Confirm photo'}
-                  </button>
                 </>
               ) : (
                 <p className="canvas-placeholder">No photos left for this photographer.</p>
